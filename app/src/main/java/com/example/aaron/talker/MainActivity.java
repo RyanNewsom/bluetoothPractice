@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     public final String TCLIENT = "Talker Client";  //for Log.X
     public final String TSERVER = "Talker SERVER";  //for Log.X
     public final int REQUEST_ENABLE_BT = 3313;  //our own code used with Intents
@@ -172,7 +173,7 @@ public class MainActivity extends Activity {
             String deviceName = device.getName();
             Log.i(TCLIENT, deviceName + "\n" + device);
             mTextarea.append(deviceName + ",  " + device + "\n");
-            if (deviceName.length() > 3) { //for now, looking for MSU prefix
+            if (deviceName!= null && deviceName.length() > 3) { //for now, looking for MSU prefix
                 String prefix = deviceName.substring(0, 3);
                 mTextarea.append("Prefix = " + prefix + "\n    ");
                 if (prefix.equals("MSU")) {//This is the server
