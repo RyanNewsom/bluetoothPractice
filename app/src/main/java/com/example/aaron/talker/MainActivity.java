@@ -1,6 +1,6 @@
 package com.example.aaron.talker;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     //private ArrayList<Object> mBTdeviceList;    //holds found Bluetooth devices
     private TextView mTextarea;                 //for writing messages to screen
     private AcceptThread server;                //server object
+    private ArrayList<String> mDeviceList;
 
     private final BroadcastReceiver mReceiver =        //when activated, scans for Bluetooth devices
             new BroadcastReceiver() {
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         MY_UUID = UUID.fromString(MY_UUID_STRING);
         mTextarea = (TextView) findViewById(R.id.textView);
         mTextarea.append("My UUID: " + MY_UUID + "\n");
+        mDeviceList = new ArrayList<>();
         setUpButtons();
     }
 
@@ -68,6 +70,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 getPairedDevices();
                 setUpBroadcastReceiver();
+                Bundle bundleForFrag = new Bundle();
+
+                bundleForFrag.putStringArrayList("mDeviceList", mDeviceList);
+
+                Fragment deviceListFragment = new DeviceListFragment();
+                deviceListFragment.setArguments(bundleForFrag);
+                getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.main_layout, deviceListFragment).commit();
             }
         });
         connect_button = (Button) findViewById(R.id.connect_button);
@@ -149,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 Log.i(TCLIENT, device.getName() + "\n" + device);
+                mDeviceList.add("" + device.getName() + "\n" + device + "\n");
                 mTextarea.append("" + device.getName() + "\n" + device + "\n");
             }
         }
@@ -174,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             String deviceName = device.getName();
             Log.i(TCLIENT, deviceName + "\n" + device);
             mTextarea.append(deviceName + ",  " + device + "\n");
-            if (deviceName!= null && deviceName.length() > 3) { //for now, looking for MSU prefix
+            if (deviceName != null && deviceName.length() > 3) { //for now, looking for MSU prefix
                 String prefix = deviceName.substring(0, 3);
                 mTextarea.append("Prefix = " + prefix + "\n    ");
                 if (prefix.equals("MSU")) {//This is the server
