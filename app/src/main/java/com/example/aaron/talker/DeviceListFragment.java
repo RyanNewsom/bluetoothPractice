@@ -42,7 +42,7 @@ public class DeviceListFragment extends Fragment {
 
 
         mListView.setAdapter(new ArrayAdapter<>(getActivity(),
-                R.layout.fragment_device_list, mDeviceNames));
+                android.R.layout.simple_list_item_1, mDeviceNames));
 
         return view;
     }
